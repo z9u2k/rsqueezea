@@ -1,0 +1,59 @@
+project(':common') {
+    apply plugin: "java"
+
+    group 'net.duvdev'
+    version '1.0.0-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+    }
+
+    test {
+        include 'net/duvdev/rsqueezea/**'
+    }
+}
+
+project(':cli') {
+    apply plugin: "java"
+
+    group 'net.duvdev'
+    version '1.0.0-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile project(':common')
+
+        compile 'com.google.code.findbugs:jsr305:3.0.2'
+        compile 'com.beust:jcommander:1.72'
+        compile 'org.bouncycastle:bcprov-jdk15on:1.59'
+        compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+
+        testCompile 'junit:junit:4.12'
+    }
+
+    test {
+        include 'net/duvdev/rsqueezea/**'
+    }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': 'net.duvdev.rsqueezea.cli.Main'
+        }
+        from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+            exclude "META-INF/*.SF"
+            exclude "META-INF/*.DSA"
+            exclude "META-INF/*.RSA"
+        }
+    }
+}

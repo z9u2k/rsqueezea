@@ -1,0 +1,3 @@
+rootProject.name = 'rsqueezea'
+include ':common', ':cli'
+
