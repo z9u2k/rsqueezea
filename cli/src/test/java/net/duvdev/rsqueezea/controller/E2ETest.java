@@ -33,6 +33,11 @@ public class E2ETest {
   }
 
   @Test
+  public void withModulusQR() throws Exception {
+    endToEnd(SqueezeType.PRIME_WITH_MODULUS, null, "QR");
+  }
+
+  @Test
   public void withoutModulusDER() throws Exception {
     endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, "DER");
   }
@@ -40,6 +45,11 @@ public class E2ETest {
   @Test
   public void withoutModulusPEM() throws Exception {
     endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, "DER");
+  }
+
+  @Test
+  public void withoutModulusQR() throws Exception {
+    endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, "QR");
   }
 
   private void endToEnd(SqueezeType type, @Nullable RSAPublicKey publicKey, String format)

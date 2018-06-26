@@ -47,7 +47,7 @@ publicly available information!**
 ### Textual Output
 
 If you want a textual output at the cost of larger size, the tool can also
-output PEM encoded structures:
+output PEM encoded structures (`-f PEM`):
 
 With modulus:
 ```
@@ -76,6 +76,18 @@ RbzlyFD+GQUpzknTvnGiboaesof1n0v68GmkM+oVipUPKoKWh4ENJ3jIWTe6IGya
 ek/PEECElnYCUtxAw63DlrbuCU5ctm+Hrfj17/dH4fZkSYvD56Zb
 -----END SQUEEZED RSA PRIVATE KEY-----
 ```
+
+### QR Code
+
+The tool can also read and write QR code in PNG format (`-f QR`):
+
+With modulus:
+
+![With modulus](https://raw.githubusercontent.com/z9u2k/rsqueezea/master/example/with_modulus.png)
+
+Without modulus:
+
+![Without modulus](https://raw.githubusercontent.com/z9u2k/rsqueezea/master/example/without_modulus.png)
 
 ## Reassemble a Key
 

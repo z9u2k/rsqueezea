@@ -15,6 +15,8 @@ public final class EncoderFactory {
             return outputStream;
         } else if ("PEM".equalsIgnoreCase(format)) {
             return new PEMOutputStream(outputStream, squeezeType);
+        } else if ("QR".equalsIgnoreCase(format)) {
+            return new QRCodeOutputStream(outputStream);
         } else {
             throw new IllegalArgumentException("Unknown format: " + format);
         }
@@ -25,6 +27,8 @@ public final class EncoderFactory {
             return inputStream;
         } else if ("PEM".equalsIgnoreCase(format)) {
             return new PEMInputStream(inputStream);
+        } else if ("QR".equalsIgnoreCase(format)) {
+            return new QRCodeInputStream(inputStream);
         } else {
             throw new IllegalArgumentException("Unknown format: " + format);
         }

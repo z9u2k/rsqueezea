@@ -202,7 +202,7 @@ public final class Main {
 
     @Parameter(
       names = {"-f", "--format"},
-      description = "Output format (PEM or DER)"
+      description = "Output format (PEM, DER or QR)"
     )
     private String format = "DER";
   }
@@ -247,7 +247,7 @@ public final class Main {
 
     @Parameter(
       names = {"-f", "--format"},
-      description = "Input format (PEM or DER)"
+      description = "Input format (PEM, DER or QR)"
     )
     private String format = "DER";
   }

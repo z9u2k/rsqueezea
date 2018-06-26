@@ -35,9 +35,13 @@ project(':cli') {
         compile project(':common')
 
         compile 'com.google.code.findbugs:jsr305:3.0.2'
+
         compile 'com.beust:jcommander:1.72'
+
         compile 'org.bouncycastle:bcprov-jdk15on:1.59'
         compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+
+        compile 'com.google.zxing:javase:3.3.3'
 
         testCompile 'junit:junit:4.12'
     }
