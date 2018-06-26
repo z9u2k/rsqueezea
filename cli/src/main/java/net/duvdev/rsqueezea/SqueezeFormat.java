@@ -7,48 +7,20 @@ package net.duvdev.rsqueezea;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DEROutputStream;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.util.io.pem.PemHeader;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
 
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 
 public final class SqueezeFormat {
 
   private static final int TYPE_PRIME_P = 0;
   private static final int TYPE_PRIME_WITH_MODULUS = 1;
 
-  public static void write(
-      SqueezedKey key, SqueezeType type, Encoding encoding, OutputStream outputStream)
-      throws IOException {
-    switch (encoding) {
-      case DER:
-        writeDER(key, type, outputStream);
-        break;
-      case PEM:
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        writeDER(key, type, byteStream);
-        PemObject pemObject =
-            new PemObject(
-                "SQUEEZED RSA PRIVATE KEY",
-                Arrays.asList(
-                    new PemHeader("Has-Modulus", type == SqueezeType.PRIME_P ? "0" : "1")),
-                byteStream.toByteArray());
-        PemWriter pemWriter = new PemWriter(new OutputStreamWriter(outputStream));
-        pemWriter.writeObject(pemObject);
-        pemWriter.flush();
-        break;
-      default:
-        throw new IllegalArgumentException(encoding.name());
-    }
-  }
-
-  private static void writeDER(SqueezedKey key, SqueezeType type, OutputStream outputStream)
+  public static void write(SqueezedKey key, SqueezeType type, OutputStream outputStream)
       throws IOException {
     DEROutputStream der = new DEROutputStream(outputStream);
     switch (type) {
@@ -65,24 +37,10 @@ public final class SqueezeFormat {
       default:
         throw new IllegalArgumentException(type.name());
     }
+    der.flush();
   }
 
-  public static SqueezedKey read(
-      InputStream inputStream, Encoding encoding, @Nullable RSAPublicKey publicKey)
-      throws IOException {
-    switch (encoding) {
-      case DER:
-        return readDER(inputStream, publicKey);
-      case PEM:
-        PEMParser pemParser = new PEMParser(new InputStreamReader(inputStream));
-        PemObject pemObject = pemParser.readPemObject();
-        return readDER(new ByteArrayInputStream(pemObject.getContent()), publicKey);
-      default:
-        throw new IllegalArgumentException(encoding.name());
-    }
-  }
-
-  private static SqueezedKey readDER(InputStream inputStream, @Nullable RSAPublicKey publicKey)
+  public static SqueezedKey read(InputStream inputStream, @Nullable RSAPublicKey publicKey)
       throws IOException {
     ASN1StreamParser parser = new ASN1StreamParser(inputStream);
     ASN1Integer type = (ASN1Integer) parser.readObject();
@@ -108,10 +66,5 @@ public final class SqueezeFormat {
     }
 
     return new SqueezedKey(primeP, modulus, publicExponent);
-  }
-
-  public enum Encoding {
-    DER,
-    PEM;
   }
 }

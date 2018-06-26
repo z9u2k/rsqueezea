@@ -8,10 +8,10 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
-import net.duvdev.rsqueezea.SqueezeFormat;
 import net.duvdev.rsqueezea.SqueezeType;
 import net.duvdev.rsqueezea.controller.ReassembleController;
 import net.duvdev.rsqueezea.controller.SqueezeController;
+import net.duvdev.rsqueezea.encoder.EncoderFactory;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.loader.PKCS1PublicKeyLoader;
 import net.duvdev.rsqueezea.loader.X509CertificatePublicKeyLoader;
@@ -89,15 +89,14 @@ public final class Main {
       outputStream = new FileOutputStream(new File(args.outputFile));
     }
 
-    SqueezeFormat.Encoding encoding = parseEncoding(args.format);
-
     try {
+      SqueezeType squeezeType =
+          args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS;
       SqueezeController controller =
           new SqueezeController(
               new PKCS1PrivateKeyLoader(pemStream),
-              outputStream,
-              args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS,
-              encoding);
+              EncoderFactory.wrapOutputStream(args.format, squeezeType, outputStream),
+              squeezeType);
       controller.run();
     } finally {
       try {
@@ -114,17 +113,6 @@ public final class Main {
       } catch (IOException e) {
         // ignored
       }
-    }
-  }
-
-  private static SqueezeFormat.Encoding parseEncoding(String encoding)
-      throws IllegalArgumentException {
-    if ("PEM".equalsIgnoreCase(encoding)) {
-      return SqueezeFormat.Encoding.PEM;
-    } else if ("DER".equalsIgnoreCase(encoding)) {
-      return SqueezeFormat.Encoding.DER;
-    } else {
-      throw new IllegalArgumentException("Unsupported format: " + encoding);
     }
   }
 
@@ -169,10 +157,9 @@ public final class Main {
       }
     }
 
-    SqueezeFormat.Encoding encoding = parseEncoding(args.format);
-
     ReassembleController controller =
-        new ReassembleController(publicKey, encoding, inputStream, outputStream);
+        new ReassembleController(
+            publicKey, EncoderFactory.wrapInputStream(args.format, inputStream), outputStream);
     controller.run();
   }
 
