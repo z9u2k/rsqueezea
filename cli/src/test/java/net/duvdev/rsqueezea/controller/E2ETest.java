@@ -4,6 +4,7 @@
  */
 package net.duvdev.rsqueezea.controller;
 
+import net.duvdev.rsqueezea.SqueezeFormat;
 import net.duvdev.rsqueezea.SqueezeType;
 import net.duvdev.rsqueezea.TestKey;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
@@ -22,27 +23,39 @@ import static junit.framework.TestCase.assertEquals;
 
 public class E2ETest {
   @Test
-  public void withModulus() throws Exception {
-    endToEnd(SqueezeType.PRIME_WITH_MODULUS, null);
+  public void withModulusDER() throws Exception {
+    endToEnd(SqueezeType.PRIME_WITH_MODULUS, null, SqueezeFormat.Encoding.DER);
   }
 
   @Test
-  public void withoutModulus() throws Exception {
-    endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY);
+  public void withModulusPEM() throws Exception {
+    endToEnd(SqueezeType.PRIME_WITH_MODULUS, null, SqueezeFormat.Encoding.PEM);
   }
 
-  private void endToEnd(SqueezeType type, @Nullable RSAPublicKey publicKey) throws Exception {
+  @Test
+  public void withoutModulusDER() throws Exception {
+    endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, SqueezeFormat.Encoding.DER);
+  }
+
+  @Test
+  public void withoutModulusPEM() throws Exception {
+    endToEnd(SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, SqueezeFormat.Encoding.PEM);
+  }
+
+  private void endToEnd(
+      SqueezeType type, @Nullable RSAPublicKey publicKey, SqueezeFormat.Encoding encoding)
+      throws Exception {
     // squeeze
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     SqueezeController squeezeController =
-        new SqueezeController(() -> TestKey.PRIVATE_KEY_SPEC, outputStream, type);
+        new SqueezeController(() -> TestKey.PRIVATE_KEY_SPEC, outputStream, type, encoding);
     squeezeController.run();
 
     // reassemble
     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
     ByteArrayOutputStream pkcs1OutputStream = new ByteArrayOutputStream();
     ReassembleController reassembleController =
-        new ReassembleController(publicKey, inputStream, pkcs1OutputStream);
+        new ReassembleController(publicKey, encoding, inputStream, pkcs1OutputStream);
     reassembleController.run();
 
     // load

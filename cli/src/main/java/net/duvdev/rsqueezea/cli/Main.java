@@ -8,6 +8,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import net.duvdev.rsqueezea.SqueezeFormat;
 import net.duvdev.rsqueezea.SqueezeType;
 import net.duvdev.rsqueezea.controller.ReassembleController;
 import net.duvdev.rsqueezea.controller.SqueezeController;
@@ -63,7 +64,7 @@ public final class Main {
           System.exit(1);
         }
       }
-    } catch (IOException e) {
+    } catch (IOException | IllegalArgumentException e) {
       if (mainArgs.verbose) {
         throw new RuntimeException(e);
       } else {
@@ -88,12 +89,15 @@ public final class Main {
       outputStream = new FileOutputStream(new File(args.outputFile));
     }
 
+    SqueezeFormat.Encoding encoding = parseEncoding(args.format);
+
     try {
       SqueezeController controller =
           new SqueezeController(
               new PKCS1PrivateKeyLoader(pemStream),
               outputStream,
-              args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS);
+              args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS,
+              encoding);
       controller.run();
     } finally {
       try {
@@ -110,6 +114,17 @@ public final class Main {
       } catch (IOException e) {
         // ignored
       }
+    }
+  }
+
+  private static SqueezeFormat.Encoding parseEncoding(String encoding)
+      throws IllegalArgumentException {
+    if ("PEM".equalsIgnoreCase(encoding)) {
+      return SqueezeFormat.Encoding.PEM;
+    } else if ("DER".equalsIgnoreCase(encoding)) {
+      return SqueezeFormat.Encoding.DER;
+    } else {
+      throw new IllegalArgumentException("Unsupported format: " + encoding);
     }
   }
 
@@ -154,8 +169,10 @@ public final class Main {
       }
     }
 
+    SqueezeFormat.Encoding encoding = parseEncoding(args.format);
+
     ReassembleController controller =
-        new ReassembleController(publicKey, inputStream, outputStream);
+        new ReassembleController(publicKey, encoding, inputStream, outputStream);
     controller.run();
   }
 
@@ -195,6 +212,12 @@ public final class Main {
           "Don't write public modulus an exponent to output file. Results in a smaller file, but reassembly will need the public key from external source"
     )
     private Boolean noModulus = false;
+
+    @Parameter(
+      names = {"-f", "--format"},
+      description = "Output format (PEM or DER)"
+    )
+    private String format = "DER";
   }
 
   @Parameters(commandDescription = "Reassemble an RSA private key from a squeezed key")
@@ -234,5 +257,11 @@ public final class Main {
       description = "Path to PKCS#1 PEM file to get public key from"
     )
     private String pkcs1File;
+
+    @Parameter(
+      names = {"-f", "--format"},
+      description = "Input format (PEM or DER)"
+    )
+    private String format = "DER";
   }
 }

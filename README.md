@@ -44,6 +44,38 @@ the `-x` flag, **but only do this if you're certain you will have access to the
 public key when you need to restore from backup as we are discarding the
 publicly available information!**
 
+### Textual Output
+
+If you want a textual output at the cost of larger size, the tool can also
+output PEM encoded structures:
+
+With modulus:
+```
+-----BEGIN SQUEEZED RSA PRIVATE KEY-----
+Has-Modulus: 1
+
+AgEBAoGBAODkrGbH8BjmgpU6JBBV8+cfD/RRoIAx5gVnuBUMY+8kNt0CDpvnkv5X
+RbzlyFD+GQUpzknTvnGiboaesof1n0v68GmkM+oVipUPKoKWh4ENJ3jIWTe6IGya
+ek/PEECElnYCUtxAw63DlrbuCU5ctm+Hrfj17/dH4fZkSYvD56ZbAoIBAQDApfxU
+5yvmQonPeF1kfM2W/zoYZLoA+ppg0HO+RG/w/mXaHX8OAZFmRUq/pvvVp9LwOg40
+n/Uus9ap9Ln9udGIFwaiHbOxhLqfEMFhE/lRskBVVhklKX5Rwxpu2Ck3l0pRqYEI
+xhA/arz3ZvPkuWwUFdTMHDq1mFR6XMatIsCB6/3PtNhfkHBW3CVkCYBFr+yWLVTq
+WZxA9oaQboRNR/W2BCzQNS/YWO0UVCL9nOnoFuOycWmmA4mZZPS/NjxVHiQ2mE5H
+RuQuWj0fL9IwP1fOaJw7DrbmT4P2IrPYNA2xdchguynUShvht1ViUYAQtgN02BiZ
+FlP1S2M6dJzaNcrRAgMBAAE=
+-----END SQUEEZED RSA PRIVATE KEY-----
+```
+
+Without modulus:
+```
+-----BEGIN SQUEEZED RSA PRIVATE KEY-----
+Has-Modulus: 0
+
+AgEAAoGBAODkrGbH8BjmgpU6JBBV8+cfD/RRoIAx5gVnuBUMY+8kNt0CDpvnkv5X
+RbzlyFD+GQUpzknTvnGiboaesof1n0v68GmkM+oVipUPKoKWh4ENJ3jIWTe6IGya
+ek/PEECElnYCUtxAw63DlrbuCU5ctm+Hrfj17/dH4fZkSYvD56Zb
+-----END SQUEEZED RSA PRIVATE KEY-----
+```
 
 ## Reassemble a Key
 
@@ -167,7 +199,7 @@ Type ::= INTEGER { prime-p(0), prime-with-modulus(1) }
 ```
 
 Both formats are defined as ASN.1 structures, and are encoded by the tool using
-DER encoding (to save space).
+DER encoding by default (to save space).
 
 ## Prime without Modulus
 

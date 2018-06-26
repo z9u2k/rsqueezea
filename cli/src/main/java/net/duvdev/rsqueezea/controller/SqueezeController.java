@@ -21,15 +21,21 @@ public final class SqueezeController {
 
   private final SqueezeType squeezeType;
 
+  private final SqueezeFormat.Encoding encoding;
+
   public SqueezeController(
-      RSAPrivateKeyLoader privateKeyLoader, OutputStream outputStream, SqueezeType squeezeType) {
+      RSAPrivateKeyLoader privateKeyLoader,
+      OutputStream outputStream,
+      SqueezeType squeezeType,
+      SqueezeFormat.Encoding encoding) {
     this.privateKeyLoader = privateKeyLoader;
     this.outputStream = outputStream;
     this.squeezeType = squeezeType;
+    this.encoding = encoding;
   }
 
   public void run() throws IOException {
     RSAPrivateCrtKeySpec privateKey = privateKeyLoader.load();
-    SqueezeFormat.write(SqueezedKey.fromRSAKey(privateKey), squeezeType, outputStream);
+    SqueezeFormat.write(SqueezedKey.fromRSAKey(privateKey), squeezeType, encoding, outputStream);
   }
 }

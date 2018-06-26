@@ -18,39 +18,58 @@ import static junit.framework.TestCase.assertNotNull;
 public class SqueezeFormatTest {
 
   @Test
-  public void withModulus() throws Exception {
+  public void withModulusDER() throws Exception {
+    withModulus(SqueezeFormat.Encoding.DER);
+  }
+
+  @Test
+  public void withModulusPEM() throws Exception {
+    withModulus(SqueezeFormat.Encoding.PEM);
+  }
+
+  private void withModulus(SqueezeFormat.Encoding encoding) throws Exception {
     ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_WITH_MODULUS, outStream);
+    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_WITH_MODULUS, encoding, outStream);
 
     ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-    SqueezedKey result = SqueezeFormat.read(inStream, null);
+    SqueezedKey result = SqueezeFormat.read(inStream, encoding, null);
 
     assertNotNull(result);
     assertEquals(TestKey.SQUEEZE_KEY, result);
   }
 
   @Test
-  public void withoutModulus() throws Exception {
+  public void withoutModulusDER() throws Exception {
+    withoutModulus(SqueezeFormat.Encoding.DER);
+  }
+
+  @Test
+  public void withoutModulusPEM() throws Exception {
+    withoutModulus(SqueezeFormat.Encoding.PEM);
+  }
+
+  private void withoutModulus(SqueezeFormat.Encoding encoding) throws Exception {
     ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, outStream);
+    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, encoding, outStream);
 
     ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
     RSAPublicKey publicKey =
         (RSAPublicKey)
             KeyFactory.getInstance("RSA")
                 .generatePublic(new RSAPublicKeySpec(TestKey.N, TestKey.E));
-    SqueezedKey result = SqueezeFormat.read(inStream, publicKey);
+    SqueezedKey result = SqueezeFormat.read(inStream, encoding, publicKey);
 
     assertNotNull(result);
     assertEquals(TestKey.SQUEEZE_KEY, result);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void withoutModulusNoKey() throws Exception {
+  public void withoutModulusNoKeyDER() throws Exception {
     ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, outStream);
+    SqueezeFormat.write(
+        TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, SqueezeFormat.Encoding.DER, outStream);
 
     ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-    SqueezeFormat.read(inStream, null);
+    SqueezeFormat.read(inStream, SqueezeFormat.Encoding.DER, null);
   }
 }

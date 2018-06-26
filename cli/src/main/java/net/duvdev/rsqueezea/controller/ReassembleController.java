@@ -27,19 +27,25 @@ public final class ReassembleController {
 
   private final @Nullable RSAPublicKey publicKey;
 
+  private final SqueezeFormat.Encoding encoding;
+
   private final InputStream inputStream;
 
   private final OutputStream outputStream;
 
   public ReassembleController(
-      @Nullable RSAPublicKey publicKey, InputStream inputStream, OutputStream outputStream) {
+      @Nullable RSAPublicKey publicKey,
+      SqueezeFormat.Encoding encoding,
+      InputStream inputStream,
+      OutputStream outputStream) {
     this.publicKey = publicKey;
+    this.encoding = encoding;
     this.inputStream = inputStream;
     this.outputStream = outputStream;
   }
 
   public void run() throws IOException {
-    SqueezedKey key = SqueezeFormat.read(inputStream, publicKey);
+    SqueezedKey key = SqueezeFormat.read(inputStream, encoding, publicKey);
     RSAPrivateCrtKeySpec privateKeySpec =
         KeyReassembler.reassemble(key.getModulus(), key.getPublicExponent(), key.getPrimeP());
 
