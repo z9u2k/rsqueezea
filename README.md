@@ -1,6 +1,6 @@
 # RSqueezeA
 
-Master: [![Build Status](https://travis-ci.com/z9u2k/rsqueezea.svg?branch=master)](https://travis-ci.com/z9u2k/rsqueezea)
+[![Build Status](https://travis-ci.com/z9u2k/rsqueezea.svg?branch=master)](https://travis-ci.com/z9u2k/rsqueezea) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A tool for squeezing RSA private keys for backup purposes.
 
