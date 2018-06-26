@@ -98,7 +98,8 @@ public final class SqueezeFormat {
     } else if (intType == TYPE_PRIME_P) {
       if (publicKey == null) {
         // must have public key - no modulus and exponent in squeezed key
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(
+            "Squeezed key doesn't contain public modulus - but no external modulus provided!");
       }
       modulus = publicKey.getModulus();
       publicExponent = publicKey.getPublicExponent();
