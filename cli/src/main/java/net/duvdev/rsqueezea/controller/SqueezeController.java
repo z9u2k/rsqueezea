@@ -22,9 +22,7 @@ public final class SqueezeController {
   private final SqueezeType squeezeType;
 
   public SqueezeController(
-      RSAPrivateKeyLoader privateKeyLoader,
-      OutputStream outputStream,
-      SqueezeType squeezeType) {
+      RSAPrivateKeyLoader privateKeyLoader, OutputStream outputStream, SqueezeType squeezeType) {
     this.privateKeyLoader = privateKeyLoader;
     this.outputStream = outputStream;
     this.squeezeType = squeezeType;

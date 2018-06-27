@@ -14,24 +14,24 @@ import java.util.stream.IntStream;
 
 public final class QRCodeOutputStream extends SerializingOutputStreamWrapper {
 
-    protected QRCodeOutputStream(OutputStream wrapped) {
-        super(wrapped);
-    }
+  protected QRCodeOutputStream(OutputStream wrapped) {
+    super(wrapped);
+  }
 
-    @Override
-    protected void serialize(byte[] bytes, OutputStream outputStream) throws IOException {
-        int[] codepoints = IntStream.range(0, bytes.length).map(i -> bytes[i] & 0xff).toArray();
-        String text = new String(codepoints, 0, codepoints.length);
+  @Override
+  protected void serialize(byte[] bytes, OutputStream outputStream) throws IOException {
+    int[] codepoints = IntStream.range(0, bytes.length).map(i -> bytes[i] & 0xff).toArray();
+    String text = new String(codepoints, 0, codepoints.length);
 
-        QRCodeWriter barcodeWriter = new QRCodeWriter();
-        HashMap<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        BitMatrix bitMatrix;
-        try {
-            bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, 0, 0, hints);
-        } catch (WriterException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+    QRCodeWriter barcodeWriter = new QRCodeWriter();
+    HashMap<EncodeHintType, Object> hints = new HashMap<>();
+    hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+    BitMatrix bitMatrix;
+    try {
+      bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, 0, 0, hints);
+    } catch (WriterException e) {
+      throw new IOException(e.getMessage(), e);
     }
+    MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+  }
 }
