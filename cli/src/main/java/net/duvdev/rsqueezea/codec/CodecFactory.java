@@ -27,7 +27,7 @@ public final class CodecFactory {
     }
   }
 
-  private enum CodecType {
+  public enum CodecType {
     DER("DER", IdentityCodec.class),
     PEM("PEM", PEMCodec.class),
     QR("QR", QRCodeCodec.class);
@@ -39,6 +39,10 @@ public final class CodecFactory {
     CodecType(String name, Class<? extends Codec<byte[], byte[]>> clazz) {
       this.name = name;
       this.clazz = clazz;
+    }
+
+    public String formatName() {
+      return name;
     }
   }
 }
