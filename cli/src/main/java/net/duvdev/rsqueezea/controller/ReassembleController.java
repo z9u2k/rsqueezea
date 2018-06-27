@@ -5,6 +5,8 @@
 package net.duvdev.rsqueezea.controller;
 
 import net.duvdev.rsqueezea.KeyReassembler;
+import net.duvdev.rsqueezea.codec.Codec;
+import net.duvdev.rsqueezea.codec.DecoderException;
 import net.duvdev.rsqueezea.model.SqueezedKey;
 import net.duvdev.rsqueezea.protocol.Protocol;
 import net.duvdev.rsqueezea.protocol.ProtocolFactory;
@@ -31,17 +33,29 @@ public final class ReassembleController {
 
   private final InputStream inputStream;
 
+  private final Codec<byte[], byte[]> codec;
+
   private final OutputStream outputStream;
 
   public ReassembleController(
-      @Nullable RSAPublicKey publicKey, InputStream inputStream, OutputStream outputStream) {
+      @Nullable RSAPublicKey publicKey,
+      InputStream inputStream,
+      Codec<byte[], byte[]> codec,
+      OutputStream outputStream) {
     this.publicKey = publicKey;
     this.inputStream = inputStream;
+    this.codec = codec;
     this.outputStream = outputStream;
   }
 
   public void run() throws IOException {
-    byte[] data = IOUtils.toByteArray(inputStream);
+    byte[] encoded = IOUtils.toByteArray(inputStream);
+    byte[] data;
+    try {
+      data = codec.decode(encoded);
+    } catch (DecoderException e) {
+      throw new IOException(e.getMessage(), e.getCause());
+    }
     ASN1StreamParser parser = new ASN1StreamParser(new ByteArrayInputStream(data));
     ASN1Integer version = (ASN1Integer) parser.readObject();
     Protocol protocol = ProtocolFactory.getInstance(version.getValue().intValueExact());

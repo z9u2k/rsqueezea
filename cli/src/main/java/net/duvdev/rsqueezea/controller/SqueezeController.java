@@ -4,6 +4,8 @@
  */
 package net.duvdev.rsqueezea.controller;
 
+import net.duvdev.rsqueezea.codec.Codec;
+import net.duvdev.rsqueezea.codec.EncoderException;
 import net.duvdev.rsqueezea.loader.RSAPrivateKeyLoader;
 import net.duvdev.rsqueezea.model.SqueezedKey;
 import net.duvdev.rsqueezea.protocol.Protocol;
@@ -19,14 +21,20 @@ public final class SqueezeController {
 
   private final RSAPrivateKeyLoader privateKeyLoader;
 
-  private final OutputStream outputStream;
-
   private final SqueezeType squeezeType;
 
+  private final Codec<byte[], byte[]> codec;
+
+  private final OutputStream outputStream;
+
   public SqueezeController(
-      RSAPrivateKeyLoader privateKeyLoader, OutputStream outputStream, SqueezeType squeezeType) {
+      RSAPrivateKeyLoader privateKeyLoader,
+      SqueezeType squeezeType,
+      Codec<byte[], byte[]> codec,
+      OutputStream outputStream) {
     this.privateKeyLoader = privateKeyLoader;
     this.outputStream = outputStream;
+    this.codec = codec;
     this.squeezeType = squeezeType;
   }
 
@@ -34,7 +42,13 @@ public final class SqueezeController {
     RSAPrivateCrtKeySpec privateKey = privateKeyLoader.load();
     Protocol protocol = ProtocolFactory.getLatest();
     byte[] data = protocol.encodeSqueezedKey(SqueezedKey.fromRSAKey(privateKey), squeezeType);
-    IOUtils.write(data, outputStream);
+    byte[] encoded;
+    try {
+      encoded = codec.encode(data);
+    } catch (EncoderException e) {
+      throw new IOException(e.getMessage(), e);
+    }
+    IOUtils.write(encoded, outputStream);
     outputStream.flush();
   }
 }

@@ -8,9 +8,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import net.duvdev.rsqueezea.codec.CodecFactory;
 import net.duvdev.rsqueezea.controller.ReassembleController;
 import net.duvdev.rsqueezea.controller.SqueezeController;
-import net.duvdev.rsqueezea.encoder.EncoderFactory;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.loader.PKCS1PublicKeyLoader;
 import net.duvdev.rsqueezea.loader.X509CertificatePublicKeyLoader;
@@ -95,8 +95,9 @@ public final class Main {
       SqueezeController controller =
           new SqueezeController(
               new PKCS1PrivateKeyLoader(pemStream),
-              EncoderFactory.wrapOutputStream(args.format, squeezeType, outputStream),
-              squeezeType);
+              squeezeType,
+              CodecFactory.getCodec(args.format),
+              outputStream);
       controller.run();
     } finally {
       try {
@@ -159,7 +160,7 @@ public final class Main {
 
     ReassembleController controller =
         new ReassembleController(
-            publicKey, EncoderFactory.wrapInputStream(args.format, inputStream), outputStream);
+            publicKey, inputStream, CodecFactory.getCodec(args.format), outputStream);
     controller.run();
   }
 

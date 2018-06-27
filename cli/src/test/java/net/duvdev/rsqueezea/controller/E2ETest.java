@@ -5,7 +5,7 @@
 package net.duvdev.rsqueezea.controller;
 
 import net.duvdev.rsqueezea.TestKey;
-import net.duvdev.rsqueezea.encoder.EncoderFactory;
+import net.duvdev.rsqueezea.codec.CodecFactory;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.protocol.SqueezeType;
 import org.junit.Test;
@@ -64,9 +64,7 @@ public class E2ETest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     SqueezeController squeezeController =
         new SqueezeController(
-            () -> TestKey.PRIVATE_KEY_SPEC,
-            EncoderFactory.wrapOutputStream(format, type, outputStream),
-            type);
+            () -> TestKey.PRIVATE_KEY_SPEC, type, CodecFactory.getCodec(format), outputStream);
     squeezeController.run();
 
     // reassemble
@@ -74,7 +72,7 @@ public class E2ETest {
     ByteArrayOutputStream pkcs1OutputStream = new ByteArrayOutputStream();
     ReassembleController reassembleController =
         new ReassembleController(
-            publicKey, EncoderFactory.wrapInputStream(format, inputStream), pkcs1OutputStream);
+            publicKey, inputStream, CodecFactory.getCodec(format), pkcs1OutputStream);
     reassembleController.run();
 
     // load
