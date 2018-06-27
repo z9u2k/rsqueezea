@@ -22,6 +22,12 @@ import java.security.spec.RSAPrivateCrtKeySpec;
 import static junit.framework.TestCase.assertEquals;
 
 public class E2ETest {
+
+  @Test(expected = IllegalArgumentException.class)
+  public void withoutModulusNoExternalPublicKey() throws Exception {
+    endToEnd(SqueezeType.PRIME_P, null, "DER");
+  }
+
   @Test
   public void withModulusDER() throws Exception {
     endToEnd(SqueezeType.PRIME_WITH_MODULUS, null, "DER");

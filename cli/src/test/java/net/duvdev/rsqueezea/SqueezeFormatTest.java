@@ -8,9 +8,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPublicKeySpec;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -23,7 +20,7 @@ public class SqueezeFormatTest {
     SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_WITH_MODULUS, outStream);
 
     ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-    SqueezedKey result = SqueezeFormat.read(inStream, null);
+    SqueezedKey result = SqueezeFormat.read(inStream);
 
     assertNotNull(result);
     assertEquals(TestKey.SQUEEZE_KEY, result);
@@ -35,22 +32,9 @@ public class SqueezeFormatTest {
     SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, outStream);
 
     ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-    RSAPublicKey publicKey =
-        (RSAPublicKey)
-            KeyFactory.getInstance("RSA")
-                .generatePublic(new RSAPublicKeySpec(TestKey.N, TestKey.E));
-    SqueezedKey result = SqueezeFormat.read(inStream, publicKey);
+    SqueezedKey result = SqueezeFormat.read(inStream);
 
     assertNotNull(result);
-    assertEquals(TestKey.SQUEEZE_KEY, result);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void withoutModulusNoKeyDER() throws Exception {
-    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    SqueezeFormat.write(TestKey.SQUEEZE_KEY, SqueezeType.PRIME_P, outStream);
-
-    ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-    SqueezeFormat.read(inStream, null);
+    assertEquals(new SqueezedKey(TestKey.P), result);
   }
 }

@@ -8,12 +8,10 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DEROutputStream;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.security.interfaces.RSAPublicKey;
 
 public final class SqueezeFormat {
 
@@ -27,8 +25,18 @@ public final class SqueezeFormat {
       case PRIME_WITH_MODULUS:
         der.writeObject(new ASN1Integer(TYPE_PRIME_WITH_MODULUS));
         der.writeObject(new ASN1Integer(key.getPrimeP()));
-        der.writeObject(new ASN1Integer(key.getModulus()));
-        der.writeObject(new ASN1Integer(key.getPublicExponent()));
+        BigInteger modulus = key.getModulus();
+        if (modulus == null) {
+          throw new IllegalArgumentException("Squeeze type " + type + " requested without modulus");
+        }
+        der.writeObject(new ASN1Integer(modulus));
+
+        BigInteger publicExponent = key.getPublicExponent();
+        if (publicExponent == null) {
+          throw new IllegalArgumentException(
+              "Squeeze type " + type + " requested without public exponent");
+        }
+        der.writeObject(new ASN1Integer(publicExponent));
         break;
       case PRIME_P:
         der.writeObject(new ASN1Integer(TYPE_PRIME_P));
@@ -40,8 +48,7 @@ public final class SqueezeFormat {
     der.flush();
   }
 
-  public static SqueezedKey read(InputStream inputStream, @Nullable RSAPublicKey publicKey)
-      throws IOException {
+  public static SqueezedKey read(InputStream inputStream) throws IOException {
     ASN1StreamParser parser = new ASN1StreamParser(inputStream);
     ASN1Integer type = (ASN1Integer) parser.readObject();
     BigInteger primeP = ((ASN1Integer) parser.readObject()).getValue();
@@ -54,13 +61,8 @@ public final class SqueezeFormat {
       modulus = ((ASN1Integer) parser.readObject()).getValue();
       publicExponent = ((ASN1Integer) parser.readObject()).getValue();
     } else if (intType == TYPE_PRIME_P) {
-      if (publicKey == null) {
-        // must have public key - no modulus and exponent in squeezed key
-        throw new IllegalArgumentException(
-            "Squeezed key doesn't contain public modulus - but no external modulus provided!");
-      }
-      modulus = publicKey.getModulus();
-      publicExponent = publicKey.getPublicExponent();
+      modulus = null;
+      publicExponent = null;
     } else {
       throw new IllegalArgumentException(Integer.toString(intType));
     }

@@ -4,6 +4,7 @@
  */
 package net.duvdev.rsqueezea;
 
+import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.util.Objects;
@@ -12,11 +13,16 @@ public class SqueezedKey {
 
   private final BigInteger primeP;
 
-  private final BigInteger modulus;
+  private final @Nullable BigInteger modulus;
 
-  private final BigInteger publicExponent;
+  private final @Nullable BigInteger publicExponent;
 
-  public SqueezedKey(BigInteger primeP, BigInteger modulus, BigInteger publicExponent) {
+  public SqueezedKey(BigInteger primeP) {
+    this(primeP, null, null);
+  }
+
+  public SqueezedKey(
+      BigInteger primeP, @Nullable BigInteger modulus, @Nullable BigInteger publicExponent) {
     this.primeP = primeP;
     this.modulus = modulus;
     this.publicExponent = publicExponent;
@@ -31,11 +37,11 @@ public class SqueezedKey {
     return primeP;
   }
 
-  public BigInteger getModulus() {
+  public @Nullable BigInteger getModulus() {
     return modulus;
   }
 
-  public BigInteger getPublicExponent() {
+  public @Nullable BigInteger getPublicExponent() {
     return publicExponent;
   }
 
@@ -51,7 +57,6 @@ public class SqueezedKey {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(primeP, modulus, publicExponent);
   }
 }

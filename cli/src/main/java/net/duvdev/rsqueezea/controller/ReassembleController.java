@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
 
@@ -39,9 +40,23 @@ public final class ReassembleController {
   }
 
   public void run() throws IOException {
-    SqueezedKey key = SqueezeFormat.read(inputStream, publicKey);
+    SqueezedKey key = SqueezeFormat.read(inputStream);
+
+    BigInteger modulus = key.getModulus();
+    BigInteger publicExponent = key.getPublicExponent();
+
+    if (modulus == null || publicExponent == null) {
+      if (publicKey == null) {
+        throw new IllegalArgumentException(
+            "Key does not have public exponent, and no external public key provided");
+      } else {
+        modulus = publicKey.getModulus();
+        publicExponent = publicKey.getPublicExponent();
+      }
+    }
+
     RSAPrivateCrtKeySpec privateKeySpec =
-        KeyReassembler.reassemble(key.getModulus(), key.getPublicExponent(), key.getPrimeP());
+        KeyReassembler.reassemble(modulus, publicExponent, key.getPrimeP());
 
     PrivateKeyInfo pkInfo =
         PrivateKeyInfoFactory.createPrivateKeyInfo(
