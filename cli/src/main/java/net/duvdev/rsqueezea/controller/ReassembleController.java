@@ -7,10 +7,12 @@ package net.duvdev.rsqueezea.controller;
 import net.duvdev.rsqueezea.KeyReassembler;
 import net.duvdev.rsqueezea.model.SqueezedKey;
 import net.duvdev.rsqueezea.protocol.Protocol;
-import net.duvdev.rsqueezea.protocol.V0Protocol;
+import net.duvdev.rsqueezea.protocol.ProtocolFactory;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
@@ -18,10 +20,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.util.io.pem.PemObject;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
@@ -43,7 +42,10 @@ public final class ReassembleController {
 
   public void run() throws IOException {
     byte[] data = IOUtils.toByteArray(inputStream);
-    Protocol protocol = new V0Protocol();
+    ASN1StreamParser parser = new ASN1StreamParser(new ByteArrayInputStream(data));
+    ASN1Integer version = (ASN1Integer) parser.readObject();
+    Protocol protocol = ProtocolFactory.getInstance(version.getValue().intValueExact());
+
     SqueezedKey key = protocol.decodeSqueezedKey(data);
 
     BigInteger modulus = key.getModulus();

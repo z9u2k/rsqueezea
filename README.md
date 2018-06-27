@@ -213,22 +213,32 @@ Type ::= INTEGER { prime-p(0), prime-with-modulus(1) }
 Both formats are defined as ASN.1 structures, and are encoded by the tool using
 DER encoding by default (to save space).
 
+For future compatibility, we add a `version` field to each structure as the
+first field, to allow non-backward-compatible changes.
+
+```
+Version ::= INTEGER
+```
+
 ## Prime without Modulus
 
 ```
-RSQueezeAKeyWithoutModulus ::= SEQUENCE {
+RSQueezeAKeyWithoutModulusV0 ::= SEQUENCE {
+  version          Version,
   type             Type,
   prime1           INTEGER  -- p
 }
 ```
 
+* `version` denotes the structure version. It _SHALL_ be `0` for this structure
 * `type` denotes the key type. It _SHALL_ be `0` for this structure
 * `prime1` is the prime factor `p` of `n`
 
 ## Prime with Modulus
 
 ```
-RSQueezeAKeyWithModulus ::= SEQUENCE {
+RSQueezeAKeyWithModulusV0 ::= SEQUENCE {
+  version          Version,
   type             Type,
   prime1           INTEGER,  -- p
   modulus          INTEGER,  -- n
@@ -236,6 +246,7 @@ RSQueezeAKeyWithModulus ::= SEQUENCE {
 }
 ```
 
+* `version` denotes the structure version. It _SHALL_ be `0` for this structure
 * `type` denotes the key type. It _SHALL_ be `1` for this structure
 * `prime1` is the prime factor `p` of `n`
 * `modulus` is the RSA modulus `n`

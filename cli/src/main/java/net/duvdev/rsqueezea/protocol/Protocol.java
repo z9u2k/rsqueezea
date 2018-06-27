@@ -9,6 +9,8 @@ import net.duvdev.rsqueezea.model.SqueezedKey;
 import java.io.IOException;
 
 public interface Protocol {
+  int getVersion();
+
   byte[] encodeSqueezedKey(SqueezedKey key, SqueezeType type) throws IOException;
 
   SqueezedKey decodeSqueezedKey(byte[] data) throws IOException;

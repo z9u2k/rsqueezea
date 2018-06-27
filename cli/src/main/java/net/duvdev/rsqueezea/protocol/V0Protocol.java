@@ -14,15 +14,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-public final class V0Protocol implements Protocol {
+final class V0Protocol implements Protocol {
 
   private static final int TYPE_PRIME_P = 0;
   private static final int TYPE_PRIME_WITH_MODULUS = 1;
 
   @Override
+  public int getVersion() {
+    return 0;
+  }
+
+  @Override
   public byte[] encodeSqueezedKey(SqueezedKey key, SqueezeType type) throws IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     DEROutputStream der = new DEROutputStream(outputStream);
+    der.writeObject(new ASN1Integer(getVersion()));
     switch (type) {
       case PRIME_WITH_MODULUS:
         der.writeObject(new ASN1Integer(TYPE_PRIME_WITH_MODULUS));
@@ -54,6 +60,10 @@ public final class V0Protocol implements Protocol {
   @Override
   public SqueezedKey decodeSqueezedKey(byte[] data) throws IOException {
     ASN1StreamParser parser = new ASN1StreamParser(new ByteArrayInputStream(data));
+    ASN1Integer version = (ASN1Integer) parser.readObject();
+    if (version.getValue().intValueExact() != getVersion()) {
+      throw new IOException("Wrong version. Expected 0 but was " + version.getValue());
+    }
     ASN1Integer type = (ASN1Integer) parser.readObject();
     BigInteger primeP = ((ASN1Integer) parser.readObject()).getValue();
 
