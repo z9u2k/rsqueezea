@@ -4,7 +4,7 @@
  */
 package net.duvdev.rsqueezea.encoder;
 
-import net.duvdev.rsqueezea.SqueezeType;
+import net.duvdev.rsqueezea.protocol.SqueezeType;
 import org.bouncycastle.util.io.pem.PemHeader;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;

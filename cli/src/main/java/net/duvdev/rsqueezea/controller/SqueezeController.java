@@ -4,10 +4,12 @@
  */
 package net.duvdev.rsqueezea.controller;
 
-import net.duvdev.rsqueezea.SqueezeFormat;
-import net.duvdev.rsqueezea.SqueezeType;
-import net.duvdev.rsqueezea.SqueezedKey;
 import net.duvdev.rsqueezea.loader.RSAPrivateKeyLoader;
+import net.duvdev.rsqueezea.model.SqueezedKey;
+import net.duvdev.rsqueezea.protocol.Protocol;
+import net.duvdev.rsqueezea.protocol.SqueezeType;
+import net.duvdev.rsqueezea.protocol.V0Protocol;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,6 +32,9 @@ public final class SqueezeController {
 
   public void run() throws IOException {
     RSAPrivateCrtKeySpec privateKey = privateKeyLoader.load();
-    SqueezeFormat.write(SqueezedKey.fromRSAKey(privateKey), squeezeType, outputStream);
+    Protocol protocol = new V0Protocol();
+    byte[] data = protocol.encodeSqueezedKey(SqueezedKey.fromRSAKey(privateKey), squeezeType);
+    IOUtils.write(data, outputStream);
+    outputStream.flush();
   }
 }

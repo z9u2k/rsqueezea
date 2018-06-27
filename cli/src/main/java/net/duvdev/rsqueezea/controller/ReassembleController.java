@@ -5,8 +5,10 @@
 package net.duvdev.rsqueezea.controller;
 
 import net.duvdev.rsqueezea.KeyReassembler;
-import net.duvdev.rsqueezea.SqueezeFormat;
-import net.duvdev.rsqueezea.SqueezedKey;
+import net.duvdev.rsqueezea.model.SqueezedKey;
+import net.duvdev.rsqueezea.protocol.Protocol;
+import net.duvdev.rsqueezea.protocol.V0Protocol;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -40,7 +42,9 @@ public final class ReassembleController {
   }
 
   public void run() throws IOException {
-    SqueezedKey key = SqueezeFormat.read(inputStream);
+    byte[] data = IOUtils.toByteArray(inputStream);
+    Protocol protocol = new V0Protocol();
+    SqueezedKey key = protocol.decodeSqueezedKey(data);
 
     BigInteger modulus = key.getModulus();
     BigInteger publicExponent = key.getPublicExponent();
@@ -75,5 +79,6 @@ public final class ReassembleController {
     JcaPEMWriter pemWriter = new JcaPEMWriter(new OutputStreamWriter(outputStream));
     pemWriter.writeObject(new PemObject("RSA PRIVATE KEY", primitive.getEncoded()));
     pemWriter.flush();
+    outputStream.flush();
   }
 }

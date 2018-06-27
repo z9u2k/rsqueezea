@@ -8,13 +8,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
-import net.duvdev.rsqueezea.SqueezeType;
 import net.duvdev.rsqueezea.controller.ReassembleController;
 import net.duvdev.rsqueezea.controller.SqueezeController;
 import net.duvdev.rsqueezea.encoder.EncoderFactory;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.loader.PKCS1PublicKeyLoader;
 import net.duvdev.rsqueezea.loader.X509CertificatePublicKeyLoader;
+import net.duvdev.rsqueezea.protocol.SqueezeType;
 
 import java.io.*;
 import java.math.BigInteger;

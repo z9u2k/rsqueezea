@@ -4,10 +4,10 @@
  */
 package net.duvdev.rsqueezea.controller;
 
-import net.duvdev.rsqueezea.SqueezeType;
 import net.duvdev.rsqueezea.TestKey;
 import net.duvdev.rsqueezea.encoder.EncoderFactory;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
+import net.duvdev.rsqueezea.protocol.SqueezeType;
 import org.junit.Test;
 
 import javax.annotation.Nullable;

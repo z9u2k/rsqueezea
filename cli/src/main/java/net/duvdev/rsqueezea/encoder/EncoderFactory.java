@@ -4,7 +4,7 @@
  */
 package net.duvdev.rsqueezea.encoder;
 
-import net.duvdev.rsqueezea.SqueezeType;
+import net.duvdev.rsqueezea.protocol.SqueezeType;
 
 import java.io.InputStream;
 import java.io.OutputStream;

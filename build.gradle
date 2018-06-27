@@ -36,6 +36,8 @@ project(':cli') {
 
         compile 'com.google.code.findbugs:jsr305:3.0.2'
 
+        compile 'commons-io:commons-io:2.6'
+
         compile 'com.beust:jcommander:1.72'
 
         compile 'org.bouncycastle:bcprov-jdk15on:1.59'

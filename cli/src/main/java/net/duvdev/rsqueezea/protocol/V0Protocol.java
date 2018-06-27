@@ -2,24 +2,26 @@
  * Copyright (c) Itay Duvdevani and contributors. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
-package net.duvdev.rsqueezea;
+package net.duvdev.rsqueezea.protocol;
 
+import net.duvdev.rsqueezea.model.SqueezedKey;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DEROutputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 
-public final class SqueezeFormat {
+public final class V0Protocol implements Protocol {
 
   private static final int TYPE_PRIME_P = 0;
   private static final int TYPE_PRIME_WITH_MODULUS = 1;
 
-  public static void write(SqueezedKey key, SqueezeType type, OutputStream outputStream)
-      throws IOException {
+  @Override
+  public byte[] encodeSqueezedKey(SqueezedKey key, SqueezeType type) throws IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     DEROutputStream der = new DEROutputStream(outputStream);
     switch (type) {
       case PRIME_WITH_MODULUS:
@@ -46,10 +48,12 @@ public final class SqueezeFormat {
         throw new IllegalArgumentException(type.name());
     }
     der.flush();
+    return outputStream.toByteArray();
   }
 
-  public static SqueezedKey read(InputStream inputStream) throws IOException {
-    ASN1StreamParser parser = new ASN1StreamParser(inputStream);
+  @Override
+  public SqueezedKey decodeSqueezedKey(byte[] data) throws IOException {
+    ASN1StreamParser parser = new ASN1StreamParser(new ByteArrayInputStream(data));
     ASN1Integer type = (ASN1Integer) parser.readObject();
     BigInteger primeP = ((ASN1Integer) parser.readObject()).getValue();
 

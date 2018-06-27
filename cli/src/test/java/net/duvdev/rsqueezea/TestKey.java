@@ -4,6 +4,8 @@
  */
 package net.duvdev.rsqueezea;
 
+import net.duvdev.rsqueezea.model.SqueezedKey;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
