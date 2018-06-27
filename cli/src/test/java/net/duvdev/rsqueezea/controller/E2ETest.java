@@ -6,20 +6,14 @@ package net.duvdev.rsqueezea.controller;
 
 import net.duvdev.rsqueezea.TestKey;
 import net.duvdev.rsqueezea.codec.CodecFactory;
-import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.protocol.SqueezeType;
+import net.duvdev.rsqueezea.selftest.RSASelfTest;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
-import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPrivateCrtKeySpec;
-
-import static junit.framework.TestCase.assertEquals;
 
 public class E2ETest {
 
@@ -75,24 +69,7 @@ public class E2ETest {
             publicKey, inputStream, CodecFactory.getCodec(format), pkcs1OutputStream);
     reassembleController.run();
 
-    // load
-    PKCS1PrivateKeyLoader privateKeyLoader =
-        new PKCS1PrivateKeyLoader(new ByteArrayInputStream(pkcs1OutputStream.toByteArray()));
-    RSAPrivateCrtKeySpec loadedKey = privateKeyLoader.load();
-
-    // encrypt
-    String message = "Hello, world!";
-    Cipher encryptor = Cipher.getInstance("RSA");
-    encryptor.init(Cipher.ENCRYPT_MODE, TestKey.PUBLIC_KEY);
-    byte[] ciphertext = encryptor.doFinal(message.getBytes(StandardCharsets.UTF_8));
-
-    // decrypt
-    Cipher decryptor = Cipher.getInstance("RSA");
-    decryptor.init(Cipher.DECRYPT_MODE, KeyFactory.getInstance("RSA").generatePrivate(loadedKey));
-    byte[] plaintext = decryptor.doFinal(ciphertext);
-
-    // check
-    String decrypted = new String(plaintext, StandardCharsets.UTF_8);
-    assertEquals(message, decrypted);
+    // self-test
+    RSASelfTest.selfTest(pkcs1OutputStream.toByteArray(), TestKey.PUBLIC_KEY);
   }
 }
