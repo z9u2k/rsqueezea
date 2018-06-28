@@ -16,22 +16,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.stream.IntStream;
 
 public final class QRCodeCodec implements Codec<byte[], byte[]> {
   @Override
   public byte[] decode(byte[] encoded) throws DecoderException {
     try {
+      MultiFormatReader reader = new MultiFormatReader();
+      HashMap<DecodeHintType, Object> hints = new HashMap<>();
+      hints.put(DecodeHintType.CHARACTER_SET, BinaryToQRCodeStringCodec.CHARSET);
+      reader.setHints(hints);
+
       Result result =
-          new MultiFormatReader()
-              .decode(
-                  new BinaryBitmap(
-                      new HybridBinarizer(
-                          new BufferedImageLuminanceSource(
-                              ImageIO.read(new ByteArrayInputStream(encoded))))));
-      ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-      result.getText().codePoints().forEach(byteStream::write);
-      return byteStream.toByteArray();
+          reader.decode(
+              new BinaryBitmap(
+                  new HybridBinarizer(
+                      new BufferedImageLuminanceSource(
+                          ImageIO.read(new ByteArrayInputStream(encoded))))));
+      BinaryToQRCodeStringCodec codec = new BinaryToQRCodeStringCodec();
+      return codec.decode(result.getText());
     } catch (NotFoundException | IOException e) {
       throw new DecoderException(e.getMessage(), e);
     }
@@ -39,12 +41,12 @@ public final class QRCodeCodec implements Codec<byte[], byte[]> {
 
   @Override
   public byte[] encode(byte[] decoded) throws EncoderException {
-    int[] codepoints = IntStream.range(0, decoded.length).map(i -> decoded[i] & 0xff).toArray();
-    String text = new String(codepoints, 0, codepoints.length);
+    BinaryToQRCodeStringCodec codec = new BinaryToQRCodeStringCodec();
+    String text = codec.encode(decoded);
 
     QRCodeWriter barcodeWriter = new QRCodeWriter();
     HashMap<EncodeHintType, Object> hints = new HashMap<>();
-    hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+    hints.put(EncodeHintType.CHARACTER_SET, BinaryToQRCodeStringCodec.CHARSET);
     BitMatrix bitMatrix;
     try {
       bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, 0, 0, hints);
