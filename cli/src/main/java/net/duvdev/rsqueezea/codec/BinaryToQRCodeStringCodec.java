@@ -4,23 +4,19 @@
  */
 package net.duvdev.rsqueezea.codec;
 
-import java.io.ByteArrayOutputStream;
-import java.util.stream.IntStream;
+import org.bouncycastle.util.encoders.Base64;
 
 public class BinaryToQRCodeStringCodec implements Codec<byte[], String> {
 
-  public static final String CHARSET = "UTF-8";
+  public static final String CHARSET = "ISO-8859-1";
 
   @Override
   public byte[] decode(String encoded) throws DecoderException {
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    encoded.codePoints().forEach(byteStream::write);
-    return byteStream.toByteArray();
+    return Base64.decode(encoded);
   }
 
   @Override
-  public String encode(byte[] decoded) throws EncoderException {
-    int[] codepoints = IntStream.range(0, decoded.length).map(i -> decoded[i] & 0xff).toArray();
-    return new String(codepoints, 0, codepoints.length);
+  public String encode(byte[] data) throws EncoderException {
+    return Base64.toBase64String(data);
   }
 }

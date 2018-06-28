@@ -251,3 +251,10 @@ RSQueezeAKeyWithModulusV0 ::= SEQUENCE {
 * `prime1` is the prime factor `p` of `n`
 * `modulus` is the RSA modulus `n`
 * `publicExponent` is the RSA public exponent `e`
+
+# QR Code Format
+
+The generated QR code contains the DER structure encoded in Base64, to avoid character-set decoding problems. This is
+less efficient, but more portable and has higher chance of recovery.
+
+See `BinaryToQRCodeStringCodec` for implementation details.
