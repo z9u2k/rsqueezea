@@ -9,16 +9,16 @@ public final class CodecFactory {
   /** Do not instantiate */
   private CodecFactory() {}
 
-  public static Codec<byte[], byte[]> getCodec(String name) {
+  public static Codec<byte[], byte[]> getCodec(CodecType type) {
     Class<? extends Codec<byte[], byte[]>> clazz = null;
     for (CodecType codecType : CodecType.values()) {
-      if (codecType.name.equalsIgnoreCase(name)) {
+      if (type == codecType) {
         clazz = codecType.clazz;
         break;
       }
     }
     if (clazz == null) {
-      throw new IllegalArgumentException("Unknown codec: " + name);
+      throw new IllegalArgumentException("Unknown codec: " + type.name());
     }
     try {
       return clazz.newInstance();
@@ -28,21 +28,14 @@ public final class CodecFactory {
   }
 
   public enum CodecType {
-    DER("DER", IdentityCodec.class),
-    PEM("PEM", PEMCodec.class),
-    QR("QR", QRCodeCodec.class);
-
-    private final String name;
+    DER(IdentityCodec.class),
+    PEM(PEMCodec.class),
+    QR(QRCodeCodec.class);
 
     private final Class<? extends Codec<byte[], byte[]>> clazz;
 
-    CodecType(String name, Class<? extends Codec<byte[], byte[]>> clazz) {
-      this.name = name;
+    CodecType(Class<? extends Codec<byte[], byte[]>> clazz) {
       this.clazz = clazz;
-    }
-
-    public String formatName() {
-      return name;
     }
   }
 }

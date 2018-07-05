@@ -24,13 +24,13 @@ public class StressTest {
   private final String privateKeyFile;
   private final SqueezeType squeezeType;
   private final boolean reassembleWithPublicKey;
-  private final String format;
+  private final CodecFactory.CodecType format;
 
   public StressTest(
       String privateKeyFile,
       SqueezeType squeezeType,
       boolean reassembleWithPublicKey,
-      String format) {
+      CodecFactory.CodecType format) {
     this.privateKeyFile = privateKeyFile;
     this.squeezeType = squeezeType;
     this.reassembleWithPublicKey = reassembleWithPublicKey;
@@ -43,9 +43,8 @@ public class StressTest {
     for (int i = 1; i <= 11; ++i) {
       for (CodecFactory.CodecType codecType : CodecFactory.CodecType.values()) {
         String keyFile = "/stress/" + i + ".key";
-        data.add(new Object[] {keyFile, SqueezeType.PRIME_P, true, codecType.formatName()});
-        data.add(
-            new Object[] {keyFile, SqueezeType.PRIME_WITH_MODULUS, false, codecType.formatName()});
+        data.add(new Object[] {keyFile, SqueezeType.PRIME_P, true, codecType});
+        data.add(new Object[] {keyFile, SqueezeType.PRIME_WITH_MODULUS, false, codecType});
       }
     }
     return data;
@@ -62,6 +61,7 @@ public class StressTest {
                 .generatePublic(
                     new RSAPublicKeySpec(
                         privateKeySpec.getModulus(), privateKeySpec.getPublicExponent()));
-    EndToEndRunner.doEndToEnd(privateKeySpec, squeezeType, format, publicKey);
+    EndToEndRunner.doEndToEnd(
+        privateKeySpec, squeezeType, format, reassembleWithPublicKey ? publicKey : null);
   }
 }

@@ -21,7 +21,7 @@ public final class EndToEndRunner {
   public static void doEndToEnd(
       RSAPrivateCrtKeySpec privateKey,
       SqueezeType squeezeType,
-      String format,
+      CodecFactory.CodecType format,
       @Nullable RSAPublicKey publicKey)
       throws Exception {
     // squeeze

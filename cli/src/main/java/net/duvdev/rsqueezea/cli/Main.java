@@ -210,9 +210,9 @@ public final class Main {
 
     @Parameter(
       names = {"-f", "--format"},
-      description = "Output format (PEM, DER or QR)"
+      description = "Output format"
     )
-    private String format = "DER";
+    private CodecFactory.CodecType format = CodecFactory.CodecType.DER;
 
     @Parameter(
       names = {"--qr-level"},
@@ -261,8 +261,8 @@ public final class Main {
 
     @Parameter(
       names = {"-f", "--format"},
-      description = "Input format (PEM, DER or QR)"
+      description = "Input format"
     )
-    private String format = "DER";
+    private CodecFactory.CodecType format = CodecFactory.CodecType.DER;
   }
 }

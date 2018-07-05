@@ -22,9 +22,10 @@ public class E2ETest {
 
   private final SqueezeType squeezeType;
   private final @Nullable RSAPublicKey publicKey;
-  private final String format;
+  private final CodecFactory.CodecType format;
 
-  public E2ETest(SqueezeType squeezeType, @Nullable RSAPublicKey publicKey, String format) {
+  public E2ETest(
+      SqueezeType squeezeType, @Nullable RSAPublicKey publicKey, CodecFactory.CodecType format) {
     this.squeezeType = squeezeType;
     this.publicKey = publicKey;
     this.format = format;
@@ -34,8 +35,8 @@ public class E2ETest {
   public static Collection<Object[]> data() {
     List<Object[]> data = new ArrayList<>();
     for (CodecFactory.CodecType codecType : CodecFactory.CodecType.values()) {
-      data.add(new Object[] {SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, codecType.formatName()});
-      data.add(new Object[] {SqueezeType.PRIME_WITH_MODULUS, null, codecType.formatName()});
+      data.add(new Object[] {SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, codecType});
+      data.add(new Object[] {SqueezeType.PRIME_WITH_MODULUS, null, codecType});
     }
     return data;
   }
