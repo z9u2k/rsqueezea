@@ -12,6 +12,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,7 +21,8 @@ import java.util.HashMap;
 
 public final class QRCodeCodec implements Codec<byte[], byte[]> {
 
-  private Level level;
+  private static final ErrorCorrectionLevel DEFAULT_LEVEL = ErrorCorrectionLevel.M;
+  private @Nullable Level level;
 
   public QRCodeCodec setLevel(Level level) {
     this.level = level;
@@ -73,6 +75,9 @@ public final class QRCodeCodec implements Codec<byte[], byte[]> {
   }
 
   private ErrorCorrectionLevel getZXingLevel() {
+    if (level == null) {
+      return DEFAULT_LEVEL;
+    }
     switch (level) {
       case L:
         return ErrorCorrectionLevel.L;
