@@ -8,7 +8,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import net.duvdev.rsqueezea.codec.Codec;
 import net.duvdev.rsqueezea.codec.CodecFactory;
+import net.duvdev.rsqueezea.codec.QRCodeCodec;
 import net.duvdev.rsqueezea.controller.ReassembleController;
 import net.duvdev.rsqueezea.controller.SqueezeController;
 import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
@@ -92,12 +94,11 @@ public final class Main {
     try {
       SqueezeType squeezeType =
           args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS;
+      Codec<byte[], byte[]> codec = CodecFactory.getCodec(args.format);
+      configureCodec(codec, args);
       SqueezeController controller =
           new SqueezeController(
-              new PKCS1PrivateKeyLoader(pemStream),
-              squeezeType,
-              CodecFactory.getCodec(args.format),
-              outputStream);
+              new PKCS1PrivateKeyLoader(pemStream), squeezeType, codec, outputStream);
       controller.run();
     } finally {
       try {
@@ -114,6 +115,12 @@ public final class Main {
       } catch (IOException e) {
         // ignored
       }
+    }
+  }
+
+  private static void configureCodec(Codec<byte[], byte[]> codec, SqueezeCommand args) {
+    if (codec instanceof QRCodeCodec) {
+      ((QRCodeCodec) codec).setLevel(args.qrLevel);
     }
   }
 
@@ -206,6 +213,12 @@ public final class Main {
       description = "Output format (PEM, DER or QR)"
     )
     private String format = "DER";
+
+    @Parameter(
+      names = {"--qr-level"},
+      description = "QR code error correction level"
+    )
+    private QRCodeCodec.Level qrLevel = QRCodeCodec.Level.M;
   }
 
   @Parameters(commandDescription = "Reassemble an RSA private key from a squeezed key")

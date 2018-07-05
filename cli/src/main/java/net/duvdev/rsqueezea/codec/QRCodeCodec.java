@@ -10,6 +10,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,14 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public final class QRCodeCodec implements Codec<byte[], byte[]> {
+
+  private Level level;
+
+  public QRCodeCodec setLevel(Level level) {
+    this.level = level;
+    return this;
+  }
+
   @Override
   public byte[] decode(byte[] encoded) throws DecoderException {
     try {
@@ -47,6 +56,7 @@ public final class QRCodeCodec implements Codec<byte[], byte[]> {
     QRCodeWriter barcodeWriter = new QRCodeWriter();
     HashMap<EncodeHintType, Object> hints = new HashMap<>();
     hints.put(EncodeHintType.CHARACTER_SET, BinaryToQRCodeStringCodec.CHARSET);
+    hints.put(EncodeHintType.ERROR_CORRECTION, getZXingLevel());
     BitMatrix bitMatrix;
     try {
       bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, 0, 0, hints);
@@ -60,5 +70,27 @@ public final class QRCodeCodec implements Codec<byte[], byte[]> {
       throw new EncoderException(e.getMessage(), e);
     }
     return buffer.toByteArray();
+  }
+
+  private ErrorCorrectionLevel getZXingLevel() {
+    switch (level) {
+      case L:
+        return ErrorCorrectionLevel.L;
+      case M:
+        return ErrorCorrectionLevel.M;
+      case Q:
+        return ErrorCorrectionLevel.Q;
+      case H:
+        return ErrorCorrectionLevel.H;
+      default:
+        throw new IllegalArgumentException(level.name());
+    }
+  }
+
+  public enum Level {
+    L,
+    M,
+    Q,
+    H;
   }
 }
