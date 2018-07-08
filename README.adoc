@@ -163,12 +163,14 @@ M0yWhZ5/7nXKvKf4MfKXUblyJtTqb49OcibREmTATcD17ohedJYJ/fo=
 
 Different encodings will yield different sizes:
 
-| Format     | Size  |
-| ---------- | ----- |
-| PKCS#1 PEM | 1,679 |
-| PKCS#1 DER | 1,193 |
-| PKCS#8 PEM | 1,708 |
-| PKCS#8 DER | 1,219 |
+[options="header"]
+|=====================
+| Format     | Size
+| PKCS#1 PEM | 1,679
+| PKCS#1 DER | 1,193
+| PKCS#8 PEM | 1,708
+| PKCS#8 DER | 1,219
+|=====================
 
 For offline (i.e., paper) backup purposes - these sizes are enormous. Available
 on-paper digital formats are either very tedious to type in, or suffer from
