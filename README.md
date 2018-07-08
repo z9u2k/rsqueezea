@@ -258,3 +258,60 @@ The generated QR code contains the DER structure encoded in Base64, to avoid cha
 less efficient, but more portable and has higher chance of recovery.
 
 See `BinaryToQRCodeStringCodec` for implementation details.
+
+# Command-line Reference
+
+```
+Usage: <main class> [options] [command] [command options]
+  Options:
+    -h, --help
+      This help message
+    -v, --verbose
+      Be verbose
+      Default: false
+  Commands:
+    squeeze      Squeeze an RSA private key
+      Usage: squeeze [options]
+        Options:
+          -f, --format
+            Output format
+            Default: DER
+            Possible Values: [DER, PEM, QR]
+          -i, --input
+            PKCS#1 PEM RSA private key file. Use "-" for STDIN
+            Default: -
+          -x, --no-modulus
+            Don't write public modulus an exponent to output file. Results in 
+            a smaller file, but reassembly will need the public key from 
+            external source
+            Default: false
+          -o, --output
+            File to write squeezed key to. Use "-" for STDOUT
+            Default: -
+          --qr-level
+            QR code error correction level
+            Default: M
+            Possible Values: [L, M, Q, H]
+
+    reassemble      Reassemble an RSA private key from a squeezed key
+      Usage: reassemble [options]
+        Options:
+          -c, --crt
+            Path to X.509 certificate to get public key from
+          -e, --exponent
+            Public exponent (hex), if not found in squeezed key
+          -f, --format
+            Input format
+            Default: DER
+            Possible Values: [DER, PEM, QR]
+          -i, --input
+            PKCS#1 PEM RSA private key file. Use "-" for STDIN
+            Default: -
+          -n, --modulus
+            Public modulus (hex), if not found in squeezed key
+          -o, --output
+            File to write squeezed key to. Use "-" for STDOUT
+            Default: -
+          -p, --private
+            Path to PKCS#1 PEM file to get public key from
+```
