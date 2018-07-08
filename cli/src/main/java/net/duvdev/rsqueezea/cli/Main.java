@@ -17,6 +17,7 @@ import net.duvdev.rsqueezea.loader.PKCS1PrivateKeyLoader;
 import net.duvdev.rsqueezea.loader.PKCS1PublicKeyLoader;
 import net.duvdev.rsqueezea.loader.X509CertificatePublicKeyLoader;
 import net.duvdev.rsqueezea.protocol.SqueezeType;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -51,6 +52,11 @@ public final class Main {
       return;
     }
 
+    if (mainArgs.license) {
+      printLicense();
+      return;
+    }
+
     String parsedCommand = jc.getParsedCommand();
 
     try {
@@ -73,6 +79,15 @@ public final class Main {
         System.err.println(e.getMessage());
       }
       System.exit(1);
+    }
+  }
+
+  private static void printLicense() {
+    try (InputStream is = Main.class.getResourceAsStream("/META-INF/rsqueezea-LICENSE")) {
+      IOUtils.copy(is, System.out);
+      System.out.println();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
@@ -185,6 +200,12 @@ public final class Main {
       description = "Be verbose"
     )
     private boolean verbose = false;
+
+    @Parameter(
+        names = {"--license"},
+        description = "License"
+    )
+    private boolean license = false;
   }
 
   @Parameters(commandDescription = "Squeeze an RSA private key")

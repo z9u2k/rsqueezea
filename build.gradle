@@ -61,5 +61,10 @@ project(':cli') {
             exclude "META-INF/*.DSA"
             exclude "META-INF/*.RSA"
         }
+        from('../') {
+            into 'META-INF'
+            include 'LICENSE'
+            rename 'LICENSE', 'rsqueezea-LICENSE'
+        }
     }
 }
