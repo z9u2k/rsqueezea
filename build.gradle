@@ -1,7 +1,7 @@
 project(':common') {
     apply plugin: "java"
 
-    group 'net.duvdev'
+    group 'net.duvdev.rsqueezea'
     version '1.0.0-SNAPSHOT'
 
     sourceCompatibility = 1.8
@@ -22,7 +22,7 @@ project(':common') {
 project(':cli') {
     apply plugin: "java"
 
-    group 'net.duvdev'
+    group 'net.duvdev.rsqueezea'
     version '1.0.0-SNAPSHOT'
 
     sourceCompatibility = 1.8

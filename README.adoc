@@ -24,7 +24,7 @@ toc::[]
 # Quick Start
 
 ```
-$ gradle clean cli:jar
+$ gradle clean assemble
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar --help
 ```
 
