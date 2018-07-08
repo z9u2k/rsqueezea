@@ -1,3 +1,7 @@
+:toc: macro
+:toc-title:
+:toclevels: 99
+
 # RSqueezeA
 
 [![Build Status](https://travis-ci.com/z9u2k/rsqueezea.svg?branch=master)](https://travis-ci.com/z9u2k/rsqueezea) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -13,6 +17,8 @@ We index on memory.
 
 This tool strips down all redundancies from the key, and re-calculates them
 later on.
+
+toc::[]
 
 # Quick Start
 
