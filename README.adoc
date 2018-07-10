@@ -1,8 +1,9 @@
 :toc: macro
 :toc-title:
 :toclevels: 99
+:sectanchors:
 
-# RSqueezeA
+= RSqueezeA
 
 image:https://travis-ci.com/z9u2k/rsqueezea.svg?branch=master["Build Status", link="https://travis-ci.com/z9u2k/rsqueezea"]
 image:https://img.shields.io/badge/License-MIT-yellow.svg["MIT License", link="https://opensource.org/licenses/MIT"]
@@ -21,18 +22,16 @@ later on.
 
 toc::[]
 
-# Quick Start
+== Quick Start
 
-```
-$ gradle clean assemble
-$ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar --help
-```
+  $ gradle clean assemble
+  $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar --help
 
-## Squeeze a Key
+=== Squeeze a Key
 
-Input key MUST be PKCS#1, PEM-formatted, unencrypted RSA private key:
+Input key MUST be PKCS#1, PEM-formatted, unencrypted RSA private key (see <<conversion,Conversion>>):
 
-```
+....
 $ head -n 1 private.pem
 -----BEGIN RSA PRIVATE KEY-----
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar squeeze \
@@ -41,7 +40,7 @@ $ ls -l
 -rw-r--r--  1 me  1337  1679 Jun 22 10:51 private.pem
 -rw-r--r--  1 me  1338   401 Jun 22 10:51 with_modulus.der
 -rw-r--r--  1 me  1339   135 Jun 22 10:51 without_modulus.der
-```
+....
 
 Note that we're reduced the private key size from 1,679 bytes to just 401
 without losing information (~75% reduction).
@@ -51,13 +50,13 @@ the `-x` flag, **but only do this if you're certain you will have access to the
 public key when you need to restore from backup as we are discarding the
 publicly available information!**
 
-### Textual Output
+==== Textual Output
 
 If you want a textual output at the cost of larger size, the tool can also
 output PEM encoded structures (`-f PEM`):
 
-With modulus:
-```
+.With modulus
+----
 -----BEGIN SQUEEZED RSA PRIVATE KEY-----
 Has-Modulus: 1
 
@@ -71,10 +70,10 @@ WZxA9oaQboRNR/W2BCzQNS/YWO0UVCL9nOnoFuOycWmmA4mZZPS/NjxVHiQ2mE5H
 RuQuWj0fL9IwP1fOaJw7DrbmT4P2IrPYNA2xdchguynUShvht1ViUYAQtgN02BiZ
 FlP1S2M6dJzaNcrRAgMBAAE=
 -----END SQUEEZED RSA PRIVATE KEY-----
-```
+----
 
-Without modulus:
-```
+.Without modulus
+----
 -----BEGIN SQUEEZED RSA PRIVATE KEY-----
 Has-Modulus: 0
 
@@ -82,9 +81,9 @@ AgEAAoGBAODkrGbH8BjmgpU6JBBV8+cfD/RRoIAx5gVnuBUMY+8kNt0CDpvnkv5X
 RbzlyFD+GQUpzknTvnGiboaesof1n0v68GmkM+oVipUPKoKWh4ENJ3jIWTe6IGya
 ek/PEECElnYCUtxAw63DlrbuCU5ctm+Hrfj17/dH4fZkSYvD56Zb
 -----END SQUEEZED RSA PRIVATE KEY-----
-```
+----
 
-### QR Code
+==== QR Code
 
 The tool can also read and write QR code in PNG format (`-f QR`):
 
@@ -96,42 +95,98 @@ Without modulus:
 
 image:https://raw.githubusercontent.com/z9u2k/rsqueezea/master/example/without_modulus.png["Without modulus"]
 
-## Reassemble a Key
+=== Reassemble a Key
 
 Reassemble a key with modulus:
 
-```
+....
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar reassemble \
   -i with_modulus.rsa -o private.pem
-```
+....
 
 Reassemble a key without modulus, taking modulus from X.509 certificate:
 
-```
+....
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar reassemble \
   -i without_modulus.rsa -o private.pem -c cert.pem
-```
+....
 
 Reassemble a key without modulus, taking modulus from PKCS#1 public key file:
 
-```
+....
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar reassemble \
   -i without_modulus.rsa -o private.pem -p public.pem
-```
+....
 
 Reassemble a key without modulus, taking modulus and exponent directly:
 
-```
+....
 $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar reassemble \
   -i without_modulus.rsa -o private.pem -m C0A5FC54E... -e 10001
-```
+....
 
 (modulus and exponent are given in hexadecimal base)
 
-# Motivation
+[[conversion]]
+== Conversion
+
+RSqueezeA tool requires that the input key is given as an unencrypted
+PEM-encoded PKCS#1 RSA private key. This section contains some useful
+commands for converting various RSA private-key formats.
+
+An unencrypted PEM-encoded RSA public key file begins with the line:
+
+....
+-----BEGIN RSA PRIVATE KEY-----
+....
+
+=== DER to PEM
+
+....
+$ openssl rsa -in key.der -inform DER -out key.pem -outform PEM
+....
+
+=== Encrypted PEM to unencrypted PEM
+
+....
+$ openssl rsa -in encrypted.pem -out unencrypted.pem -outform PEM
+....
+
+You will be prompted for the key's password.
+
+=== OpenSSH Keys
+
+OpenSSH private keys are already in the required format.
+
+=== OpenPGP Keys
+
+==== Export
+
+Export the private key from the PGP keychain:
+
+....
+$ gpg --export-secret-keys $KEYID > key.gpg
+....
+
+The http://web.monkeysphere.info/[monkeysphere] project offers the `openpgp2ssh`
+tool, which can be used to convert PGP keys to PEM keys:
+
+....
+$ openpgp2ssh < key.gpg > key.pem
+....
+
+==== Import
+
+Using the http://web.monkeysphere.info/[monkeysphere] tool `pem2openpgp`:
+
+....
+$ pem2openpgp $USERID < mykey.pem | gpg --import
+....
+
+== Motivation
 
 Consider the following 2048-bit RSA private key:
-```
+....
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEAwKX8VOcr5kKJz3hdZHzNlv86GGS6APqaYNBzvkRv8P5l2h1/
 DgGRZkVKv6b71afS8DoONJ/1LrPWqfS5/bnRiBcGoh2zsYS6nxDBYRP5UbJAVVYZ
@@ -159,7 +214,7 @@ DAq9lhMCgYEAxrBYtTJBmCp05s76jRmnQz0IcQLSKBh7iE9NX6cTW8z5CvT/d0zx
 4N1tO2VkzOtMzQQEgkBoGPwNlaOdN8JC5n4bmddSlmb9CXnYHgMrDRxJB4WG445n
 M0yWhZ5/7nXKvKf4MfKXUblyJtTqb49OcibREmTATcD17ohedJYJ/fo=
 -----END RSA PRIVATE KEY-----
-```
+....
 
 Different encodings will yield different sizes:
 
@@ -184,7 +239,7 @@ than 4 times that?
 
 Observe the PKCS#1 structure for the private key (RFC 8017, A.1.2):
 
-```
+....
 RSAPrivateKey ::= SEQUENCE {
    version           Version,
    modulus           INTEGER,  -- n
@@ -197,7 +252,7 @@ RSAPrivateKey ::= SEQUENCE {
    coefficient       INTEGER,  -- (inverse of q) mod p
    otherPrimeInfos   OtherPrimeInfos OPTIONAL
 }
-```
+....
 
 For performance reasons, the key is kept with the _chinese remainder theorem_
 exponents and coefficients, in additional to other values for convenience.
@@ -208,16 +263,16 @@ given `e` and any two of `n`, `p`, and `q`.
 This tool will strip down all the calculated values from the key, and will
 produce a file with the bare-minimum needed to reconstruct it later.
 
-# File Format
+== File Format
 
 In some cases, the modulus and exponent may not be kept with the backup, as
 they are available publicly in an X.509 certificate or a key escrow service.
 Therefore, there are two _types_ of "squeezed" RSA private key: with and
 without the modulus.
 
-```
+....
 Type ::= INTEGER { prime-p(0), prime-with-modulus(1) }
-```
+....
 
 Both formats are defined as ASN.1 structures, and are encoded by the tool using
 DER encoding by default (to save space).
@@ -225,27 +280,27 @@ DER encoding by default (to save space).
 For future compatibility, we add a `version` field to each structure as the
 first field, to allow non-backward-compatible changes.
 
-```
+....
 Version ::= INTEGER
-```
+....
 
-## Prime without Modulus
+=== Prime without Modulus
 
-```
+....
 RSQueezeAKeyWithoutModulusV0 ::= SEQUENCE {
   version          Version,
   type             Type,
   prime1           INTEGER  -- p
 }
-```
+....
 
 * `version` denotes the structure version. It _SHALL_ be `0` for this structure
 * `type` denotes the key type. It _SHALL_ be `0` for this structure
 * `prime1` is the prime factor `p` of `n`
 
-## Prime with Modulus
+=== Prime with Modulus
 
-```
+....
 RSQueezeAKeyWithModulusV0 ::= SEQUENCE {
   version          Version,
   type             Type,
@@ -253,7 +308,7 @@ RSQueezeAKeyWithModulusV0 ::= SEQUENCE {
   modulus          INTEGER,  -- n
   publicExponent   INTEGER   -- e
 }
-```
+....
 
 * `version` denotes the structure version. It _SHALL_ be `0` for this structure
 * `type` denotes the key type. It _SHALL_ be `1` for this structure
@@ -261,16 +316,16 @@ RSQueezeAKeyWithModulusV0 ::= SEQUENCE {
 * `modulus` is the RSA modulus `n`
 * `publicExponent` is the RSA public exponent `e`
 
-# QR Code Format
+== QR Code Format
 
 The generated QR code contains the DER structure encoded in Base64, to avoid character-set decoding problems. This is
 less efficient, but more portable and has higher chance of recovery.
 
 See `BinaryToQRCodeStringCodec` for implementation details.
 
-# Command-line Reference
+== Command-line Reference
 
-```
+....
 Usage: <main class> [options] [command] [command options]
   Options:
     -h, --help
@@ -326,4 +381,4 @@ Usage: <main class> [options] [command] [command options]
             Default: -
           -p, --private
             Path to PKCS#1 PEM file to get public key from
-```
+....
