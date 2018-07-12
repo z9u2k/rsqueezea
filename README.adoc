@@ -24,7 +24,7 @@ toc::[]
 
 == Quick Start
 
-  $ gradle clean assemble
+  $ ./gradlew clean assemble
   $ java -jar cli/build/libs/cli-1.0.0-SNAPSHOT.jar --help
 
 === Squeeze a Key
