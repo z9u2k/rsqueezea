@@ -1,7 +1,7 @@
-project(':common') {
-    apply plugin: "java"
+allprojects {
+    apply plugin: 'java'
 
-    group 'net.duvdev.rsqueezea'
+    group 'net.duvdev'
     version '1.0.0-SNAPSHOT'
 
     sourceCompatibility = 1.8
@@ -19,20 +19,12 @@ project(':common') {
     }
 }
 
-project(':cli') {
-    apply plugin: "java"
+project(':rsqueezea-common') {
+}
 
-    group 'net.duvdev.rsqueezea'
-    version '1.0.0-SNAPSHOT'
-
-    sourceCompatibility = 1.8
-
-    repositories {
-        mavenCentral()
-    }
-
+project(':rsqueezea-cli') {
     dependencies {
-        compile project(':common')
+        compile project(':rsqueezea-common')
 
         compile 'com.google.code.findbugs:jsr305:3.0.2'
 
@@ -44,12 +36,6 @@ project(':cli') {
         compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
 
         compile 'com.google.zxing:javase:3.3.3'
-
-        testCompile 'junit:junit:4.12'
-    }
-
-    test {
-        include 'net/duvdev/rsqueezea/**'
     }
 
     jar {
