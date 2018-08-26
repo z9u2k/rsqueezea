@@ -25,7 +25,7 @@ toc::[]
 == Quick Start
 
   $ ./gradlew clean rsqueezea-cli:executableJar
-  $ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar --help
+  $ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar --help
 
 === Squeeze a Key
 
@@ -34,7 +34,7 @@ Input key MUST be PKCS#1, PEM-formatted, unencrypted RSA private key (see <<conv
 ....
 $ head -n 1 private.pem
 -----BEGIN RSA PRIVATE KEY-----
-$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar squeeze \
+$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar squeeze \
   -i private.pem -o with_modulus.der
 $ ls -l
 -rw-r--r--  1 me  1337  1679 Jun 22 10:51 private.pem
@@ -100,28 +100,28 @@ image:https://raw.githubusercontent.com/z9u2k/rsqueezea/master/example/without_m
 Reassemble a key with modulus:
 
 ....
-$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar reassemble \
+$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar reassemble \
   -i with_modulus.rsa -o private.pem
 ....
 
 Reassemble a key without modulus, taking modulus from X.509 certificate:
 
 ....
-$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar reassemble \
+$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar reassemble \
   -i without_modulus.rsa -o private.pem -c cert.pem
 ....
 
 Reassemble a key without modulus, taking modulus from PKCS#1 public key file:
 
 ....
-$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar reassemble \
+$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar reassemble \
   -i without_modulus.rsa -o private.pem -p public.pem
 ....
 
 Reassemble a key without modulus, taking modulus and exponent directly:
 
 ....
-$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.0.0.jar reassemble \
+$ java -jar rsqueezea-cli/build/libs/rsqueezea-cli-exe-1.1.0.jar reassemble \
   -i without_modulus.rsa -o private.pem -m C0A5FC54E... -e 10001
 ....
 
