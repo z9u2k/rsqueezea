@@ -83,24 +83,30 @@ final class V0Protocol implements Protocol {
       throw new IOException("Wrong version. Expected 0 but was " + version.getValue());
     }
     ASN1Integer type = (ASN1Integer) parser.readObject();
-    BigInteger primeP = ((ASN1Integer) parser.readObject()).getValue();
-
+    BigInteger primeP;
     BigInteger modulus;
     BigInteger publicExponent;
 
     int intType = type.getValue().intValueExact();
-    if (intType == TYPE_PRIME_WITH_MODULUS) {
-      modulus = ((ASN1Integer) parser.readObject()).getValue();
-      publicExponent = ((ASN1Integer) parser.readObject()).getValue();
-    } else if (intType == TYPE_PRIME_P) {
-      modulus = null;
-      publicExponent = null;
-    } else if (intType == TYPE_PRIME_PQ_WITH_EXPONENT) {
-      BigInteger primeQ = ((ASN1Integer) parser.readObject()).getValue();
-      publicExponent = ((ASN1Integer) parser.readObject()).getValue();
-      modulus = primeP.multiply(primeQ);
-    } else {
-      throw new IllegalArgumentException(Integer.toString(intType));
+    switch (intType) {
+      case TYPE_PRIME_WITH_MODULUS:
+        primeP = ((ASN1Integer) parser.readObject()).getValue();
+        modulus = ((ASN1Integer) parser.readObject()).getValue();
+        publicExponent = ((ASN1Integer) parser.readObject()).getValue();
+        break;
+      case TYPE_PRIME_P:
+        primeP = ((ASN1Integer) parser.readObject()).getValue();
+        modulus = null;
+        publicExponent = null;
+        break;
+      case TYPE_PRIME_PQ_WITH_EXPONENT:
+        primeP = ((ASN1Integer) parser.readObject()).getValue();
+        BigInteger primeQ = ((ASN1Integer) parser.readObject()).getValue();
+        publicExponent = ((ASN1Integer) parser.readObject()).getValue();
+        modulus = primeP.multiply(primeQ);
+        break;
+      default:
+        throw new IllegalArgumentException(Integer.toString(intType));
     }
 
     return new SqueezedKey(primeP, modulus, publicExponent);
