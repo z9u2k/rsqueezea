@@ -31,7 +31,8 @@ public class V0ProtocolTest {
   public static Collection<Object[]> data() {
     return Arrays.asList(
         new Object[] {SqueezeType.PRIME_WITH_MODULUS, TestKey.SQUEEZE_KEY},
-        new Object[] {SqueezeType.PRIME_P, new SqueezedKey(TestKey.P)});
+        new Object[] {SqueezeType.PRIME_P, new SqueezedKey(TestKey.P)},
+        new Object[] {SqueezeType.PRIME_PQ_WITH_EXPONENT, TestKey.SQUEEZE_KEY});
   }
 
   @Test

@@ -6,5 +6,6 @@ package net.duvdev.rsqueezea.protocol;
 
 public enum SqueezeType {
   PRIME_P,
-  PRIME_WITH_MODULUS;
+  PRIME_WITH_MODULUS,
+  PRIME_PQ_WITH_EXPONENT;
 }

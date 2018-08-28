@@ -37,6 +37,7 @@ public class E2ETest {
     for (CodecFactory.CodecType codecType : CodecFactory.CodecType.values()) {
       data.add(new Object[] {SqueezeType.PRIME_P, TestKey.PUBLIC_KEY, codecType});
       data.add(new Object[] {SqueezeType.PRIME_WITH_MODULUS, null, codecType});
+      data.add(new Object[] {SqueezeType.PRIME_PQ_WITH_EXPONENT, null, codecType});
     }
     return data;
   }

@@ -45,6 +45,7 @@ public class StressTest {
         String keyFile = "/stress/" + i + ".key";
         data.add(new Object[] {keyFile, SqueezeType.PRIME_P, true, codecType});
         data.add(new Object[] {keyFile, SqueezeType.PRIME_WITH_MODULUS, false, codecType});
+        data.add(new Object[] {keyFile, SqueezeType.PRIME_PQ_WITH_EXPONENT, false, codecType});
       }
     }
     return data;

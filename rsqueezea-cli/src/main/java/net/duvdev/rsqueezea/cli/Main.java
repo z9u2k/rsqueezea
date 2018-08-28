@@ -108,7 +108,7 @@ public final class Main {
 
     try {
       SqueezeType squeezeType =
-          args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_WITH_MODULUS;
+          args.noModulus ? SqueezeType.PRIME_P : SqueezeType.PRIME_PQ_WITH_EXPONENT;
       Codec<byte[], byte[]> codec = CodecFactory.getCodec(args.format);
       configureCodec(codec, args);
       SqueezeController controller =

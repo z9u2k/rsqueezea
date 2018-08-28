@@ -18,6 +18,7 @@ final class V0Protocol implements Protocol {
 
   private static final int TYPE_PRIME_P = 0;
   private static final int TYPE_PRIME_WITH_MODULUS = 1;
+  private static final int TYPE_PRIME_PQ_WITH_EXPONENT = 2;
 
   @Override
   public int getVersion() {
@@ -26,6 +27,7 @@ final class V0Protocol implements Protocol {
 
   @Override
   public byte[] encodeSqueezedKey(SqueezedKey key, SqueezeType type) throws IOException {
+    BigInteger modulus, publicExponent;
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     DEROutputStream der = new DEROutputStream(outputStream);
     der.writeObject(new ASN1Integer(getVersion()));
@@ -33,13 +35,13 @@ final class V0Protocol implements Protocol {
       case PRIME_WITH_MODULUS:
         der.writeObject(new ASN1Integer(TYPE_PRIME_WITH_MODULUS));
         der.writeObject(new ASN1Integer(key.getPrimeP()));
-        BigInteger modulus = key.getModulus();
+        modulus = key.getModulus();
         if (modulus == null) {
           throw new IllegalArgumentException("Squeeze type " + type + " requested without modulus");
         }
         der.writeObject(new ASN1Integer(modulus));
 
-        BigInteger publicExponent = key.getPublicExponent();
+        publicExponent = key.getPublicExponent();
         if (publicExponent == null) {
           throw new IllegalArgumentException(
               "Squeeze type " + type + " requested without public exponent");
@@ -49,6 +51,22 @@ final class V0Protocol implements Protocol {
       case PRIME_P:
         der.writeObject(new ASN1Integer(TYPE_PRIME_P));
         der.writeObject(new ASN1Integer(key.getPrimeP()));
+        break;
+      case PRIME_PQ_WITH_EXPONENT:
+        der.writeObject(new ASN1Integer(TYPE_PRIME_PQ_WITH_EXPONENT));
+        der.writeObject(new ASN1Integer(key.getPrimeP()));
+        modulus = key.getModulus();
+        if (modulus == null) {
+          throw new IllegalArgumentException("Squeeze type " + type + " requested without modulus");
+        }
+        BigInteger primeQ = modulus.divide(key.getPrimeP());
+        der.writeObject(new ASN1Integer(primeQ));
+        publicExponent = key.getPublicExponent();
+        if (publicExponent == null) {
+          throw new IllegalArgumentException(
+              "Squeeze type " + type + " requested without public exponent");
+        }
+        der.writeObject(new ASN1Integer(publicExponent));
         break;
       default:
         throw new IllegalArgumentException(type.name());
@@ -77,6 +95,10 @@ final class V0Protocol implements Protocol {
     } else if (intType == TYPE_PRIME_P) {
       modulus = null;
       publicExponent = null;
+    } else if (intType == TYPE_PRIME_PQ_WITH_EXPONENT) {
+      BigInteger primeQ = ((ASN1Integer) parser.readObject()).getValue();
+      publicExponent = ((ASN1Integer) parser.readObject()).getValue();
+      modulus = primeP.multiply(primeQ);
     } else {
       throw new IllegalArgumentException(Integer.toString(intType));
     }
